@@ -1,15 +1,18 @@
 package com.dongduo.library.inventory.service;
 
-import com.dongduo.library.inventory.device.rfid_def;
-import com.dongduo.library.inventory.device.rfidlib_AIP_ISO18000P6C;
-import com.dongduo.library.inventory.device.rfidlib_reader;
+import RFID.rfid_def;
+import RFID.rfidlib_AIP_ISO18000P6C;
+import RFID.rfidlib_reader;
 
 
 public class MainFrm {
     public static long hReader = 0;
 
+    public MainFrm() {
+		loadLibrary();
+	}
+
     public void connect() {
-        loadLibrary();
         Long hrOut = new Long(0);
         int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
         if (nret != 0) {
@@ -72,7 +75,8 @@ public class MainFrm {
     private void loadLibrary() {
         int osType = 0;
         int arType = 0;
-        String libPath = System.getProperty("user.dir");
+        //String libPath = System.getProperty("user.dir");
+		String libPath = "D:\\IdeaProjects\\inventory\\src\\main\\resources";
         String osName = System.getProperty("os.name");
         String architecture = System.getProperty("os.arch");
         osName = osName.toUpperCase();

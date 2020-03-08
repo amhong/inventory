@@ -87,6 +87,7 @@ public class MainController implements Initializable {
 //        });
 //        a.start();
         MainFrm mainFrm = new MainFrm();
+        mainFrm.connect();
         mainFrm.getRecordPro();
     }
 }

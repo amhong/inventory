@@ -1,4 +1,4 @@
-package com.dongduo.library.inventory.device;
+package RFID;
 
 public class rfidlib_reader {
 	/*********************************functions opened*****************************************************/
@@ -11,62 +11,43 @@ public class rfidlib_reader {
 		String libPath = "";
 		
 		String architecture = "";
-		if (osType == rfid_def.VER_LINUX)
-		{
+		if (osType == rfid_def.VER_LINUX) {
 			osName = "Linux";
-		}
-		else if (osType == rfid_def.VER_WINDOWS)
-		{
+		} else if (osType == rfid_def.VER_WINDOWS) {
 			osName = "Windows";
 		}
 
-		if (arType == rfid_def.AR_X86)
-		{
+		if (arType == rfid_def.AR_X86) {
 			architecture = "x86";
-		}
-		else if (arType == rfid_def.AR_X64)
-		{
+		} else if (arType == rfid_def.AR_X64) {
 			architecture = "x64";
 		}
 
-		if (osName.equals("Windows"))
-		{
-			libPath = String.format("%s/libs/%s/%s/rfidlib_reader.dll",
-					sLibPath, osName, architecture);
+		if (osName.equals("Windows")) {
+			libPath = String.format("%s/libs/%s/%s/rfidlib_reader.dll", sLibPath, osName, architecture);
 			System.load(libPath);
-			libPath = String.format("%s/libs/%s/%s/jni_rfidlib_reader.dll",
-					sLibPath, osName, architecture);
+			libPath = String.format("%s/libs/%s/%s/jni_rfidlib_reader.dll", sLibPath, osName, architecture);
 			System.load(libPath);
-			
-			libPath = String.format("%s/libs/%s/%s/Drivers",
-					sLibPath, osName, architecture);
+			libPath = String.format("%s/libs/%s/%s/Drivers", sLibPath, osName, architecture);
 			RDR_LoadReaderDrivers(libPath);
-		}
-		else if (osName.equals("Linux"))
-		{
+		} else if (osName.equals("Linux")) {
 		}
 	}
 	
-	public static String COMPort_GetEnumItem(int idx)
-	{
+	public static String COMPort_GetEnumItem(int idx) {
 		char nameBuf[] = new char[512];
 		Integer nSize = new Integer(0);
 		rfidlib_reader.COMPort_GetEnumItem(idx, nameBuf, nSize);
 		
-		if(osName.equals("Linux"))
-		{
+		if(osName.equals("Linux")) {
 			char tmp[] = new char[255];
-			for(int j=0;j<nSize;j++)
-			{
-				if(j%2==0)
-				{
+			for(int j=0;j<nSize;j++) {
+				if(j%2==0) {
 					tmp[j/2] = nameBuf[j];
 				}
 			}
 			return String.copyValueOf(tmp, 0, nSize/2);
-		}
-		else if(osName.equals("Windows"))
-		{
+		} else if(osName.equals("Windows")) {
 			return String.copyValueOf(nameBuf, 0, nSize);
 		}
 		return "";

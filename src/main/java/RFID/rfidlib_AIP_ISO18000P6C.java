@@ -1,4 +1,4 @@
-package com.dongduo.library.inventory.device;
+package RFID;
 
 //javah -classpath . -jni com.fridge.api.FridgeLockCtrol
 public class rfidlib_AIP_ISO18000P6C

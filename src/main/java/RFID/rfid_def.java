@@ -1,4 +1,4 @@
-package com.dongduo.library.inventory.device;
+package RFID;
 
 public class rfid_def
 {
