@@ -1,25 +1,36 @@
 package com.dongduo.library.inventory.entity;
 
+import javax.persistence.*;
+
+/**
+ * 书籍典藏信息
+ */
+@Entity
+@Table(name = "bk_bookstore")
 public class BookStore {
+    @Id
+    @Column
+    private long id;
+
+    @Column
     private String bookname;
 
+    @Column
     private String banid;
 
-    private String isbn;
+    @Column(name = "rfid_sn")
+    private String rfidSn;
 
-    private String author;
+    @JoinColumn(name = "bk_id", referencedColumnName = "id")
+    @ManyToOne()
+    private BookInfo bookInfo;
 
-    private String status;
-
-    public BookStore() {
+    public long getId() {
+        return id;
     }
 
-    public BookStore(String bookname, String banid, String isbn, String author, String status) {
-        this.bookname = bookname;
-        this.banid = banid;
-        this.isbn = isbn;
-        this.author = author;
-        this.status = status;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getBookname() {
@@ -38,27 +49,19 @@ public class BookStore {
         this.banid = banid;
     }
 
-    public String getIsbn() {
-        return isbn;
+    public String getRfidSn() {
+        return rfidSn;
     }
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
+    public void setRfidSn(String rfidSn) {
+        this.rfidSn = rfidSn;
     }
 
-    public String getAuthor() {
-        return author;
+    public BookInfo getBookInfo() {
+        return bookInfo;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setBookInfo(BookInfo bookInfo) {
+        this.bookInfo = bookInfo;
     }
 }

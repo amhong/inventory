@@ -3,58 +3,62 @@ package com.dongduo.library.inventory.service;
 import RFID.rfid_def;
 import RFID.rfidlib_AIP_ISO18000P6C;
 import RFID.rfidlib_reader;
+import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
 
-public class MainFrm {
+@Component
+public class RPanUHF {
     public static long hReader = 0;
 
-    public MainFrm() {
+    public RPanUHF() {
 		loadLibrary();
 	}
 
-    public void connect() {
+    public void connect() throws ConnectFailedException {
         Long hrOut = new Long(0);
         int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
         if (nret != 0) {
-            //TODO
-            return;
+            throw new ConnectFailedException();
         }
         hReader = hrOut;
     }
 
-	public void getRecordPro() {
-		int iret = 0;
+    public void disconnect() {
+		if (hReader == 0L) {
+			return;
+		}
+		rfidlib_reader.RDR_Close(hReader);
+		hReader = 0L;
+	}
+
+	public Set<String> getRecordEpc() {
 		byte gFlg = 0x00;//
-		long dnhReport = 0L;
 		boolean b_threadRun = true;
+		Set<String> epcSet = new HashSet<>();
 		while (b_threadRun) {
-			iret = rfidlib_reader.RDR_BuffMode_FetchRecords(hReader, gFlg); // send command to device
+			int iret = rfidlib_reader.RDR_BuffMode_FetchRecords(hReader, gFlg); // send command to device
 			if (iret != 0) {
 				gFlg = 0x00;  // if fail ,try to get again.
 				continue;
 			}
 
 			// Get records from dll buffer memory
-			byte seekFirst = 1;
-			byte seekNext = 2;
-			dnhReport = rfidlib_reader.RDR_GetTagDataReport(hReader, seekFirst);
+			long dnhReport = rfidlib_reader.RDR_GetTagDataReport(hReader, rfid_def.RFID_SEEK_FIRST);
 			while (dnhReport != 0) {
-				String strData = "";
 				byte[] byData = new byte[32];
 				Integer len = new Integer(32);
 				if (rfidlib_reader.RDR_ParseTagDataReportRaw(dnhReport, byData, len) == 0) {
 					if (len > 0) {
-						strData = byteToHex(byData).substring(0, 36);
-						System.out.println("++++++" + strData);
+						epcSet.add(byteToHex(byData).substring(0, 36));
 					}
 				}
-
 				dnhReport = rfidlib_reader.RDR_GetTagDataReport(hReader, rfid_def.RFID_SEEK_NEXT); // next
-
 			}
 			gFlg = 0x01;  // if received ok ,get next records from device
-
 		}
+		return epcSet;
 	}
 
 	/**
@@ -62,11 +66,10 @@ public class MainFrm {
 	 * @param bytes
 	 * @return
 	 */
-	public static String byteToHex(byte[] bytes){
-		String strHex = "";
+	private String byteToHex(byte[] bytes){
 		StringBuilder sb = new StringBuilder("");
 		for (int n = 0; n < bytes.length; n++) {
-			strHex = Integer.toHexString(bytes[n] & 0xFF);
+			String strHex = Integer.toHexString(bytes[n] & 0xFF);
 			sb.append((strHex.length() == 1) ? "0" + strHex : strHex); // 每个字节由两个字符表示，位数不够，高位补0
 		}
 		return sb.toString().trim();
