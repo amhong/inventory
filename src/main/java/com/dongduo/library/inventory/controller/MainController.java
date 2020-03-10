@@ -1,7 +1,7 @@
 package com.dongduo.library.inventory.controller;
 
 import com.dongduo.library.inventory.repository.BookRepository;
-import com.dongduo.library.inventory.service.ConnectFailedException;
+import com.dongduo.library.inventory.service.InventoryThread;
 import com.dongduo.library.inventory.service.RPanUHF;
 import com.dongduo.library.inventory.util.EpcCode;
 import de.felixroske.jfxsupport.FXMLController;
@@ -76,28 +76,36 @@ public class MainController implements Initializable {
 
     private void handleStart(MouseEvent event) {
         bookVos.clear();
-        try {
-            rPanUHF.connect();
-        } catch (ConnectFailedException e) {
-            logger.error(e.getMessage());
-            // TODO 弹出提示框
-            return;
-        }
-
         cancel.setVisible(true);
         start.setVisible(false);
         place.setDisable(true);
         progressBar.setVisible(true);
         progressBar.setProgress(0.05D);
 
-        Set<EpcCode> epcStrs = rPanUHF.getRecordEpc();
-        if (CollectionUtils.isEmpty(epcStrs)) {
-            // 弹出提示框，从手持盘点仪读取到的数据为空
+        if (rPanUHF.connect()) {
+            Set<EpcCode> epcStrs = rPanUHF.getRecordEpc();
+            rPanUHF.disconnect();
+            if (!CollectionUtils.isEmpty(epcStrs)) {
+                InventoryThread inventoryThread = new InventoryThread(epcStrs, bookRepository, bookVos);
+                inventoryThread.start();
+
+                int totalSize = epcStrs.size();
+                while (inventoryThread.isAlive()) {
+                    progressBar.setProgress(bookVos.size() / totalSize * 0.9);
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+                progressBar.setProgress(1);
+            } else {
+                // 弹出提示框，从手持盘点仪读取到的数据为空
+            }
+        } else {
+            // 弹出提示框
         }
 
-        a.start();
-
-        rPanUHF.disconnect();
         progressBar.setVisible(false);
         progressBar.setProgress(0.0D);
         place.setDisable(false);

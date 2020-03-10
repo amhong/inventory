@@ -7,7 +7,6 @@ import com.dongduo.library.inventory.util.EpcCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import sun.management.ExtendedPlatformComponent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,13 +21,14 @@ public class RPanUHF {
 		loadLibrary();
 	}
 
-    public void connect() throws ConnectFailedException {
+    public boolean connect() {
         Long hrOut = new Long(0);
         int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
         if (nret != 0) {
-            throw new ConnectFailedException();
+            return false;
         }
         hReader = hrOut;
+        return true;
     }
 
     public void disconnect() {
