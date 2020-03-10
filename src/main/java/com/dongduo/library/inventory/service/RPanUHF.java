@@ -3,13 +3,19 @@ package com.dongduo.library.inventory.service;
 import RFID.rfid_def;
 import RFID.rfidlib_AIP_ISO18000P6C;
 import RFID.rfidlib_reader;
+import com.dongduo.library.inventory.util.EpcCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import sun.management.ExtendedPlatformComponent;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
 public class RPanUHF {
+	private static final Logger logger = LoggerFactory.getLogger(RPanUHF.class);
+
     public static long hReader = 0;
 
     public RPanUHF() {
@@ -33,10 +39,10 @@ public class RPanUHF {
 		hReader = 0L;
 	}
 
-	public Set<String> getRecordEpc() {
+	public Set<EpcCode> getRecordEpc() {
 		byte gFlg = 0x00;//
 		boolean b_threadRun = true;
-		Set<String> epcSet = new HashSet<>();
+		Set<EpcCode> epcSet = new HashSet<>();
 		while (b_threadRun) {
 			int iret = rfidlib_reader.RDR_BuffMode_FetchRecords(hReader, gFlg); // send command to device
 			if (iret != 0) {
@@ -51,7 +57,12 @@ public class RPanUHF {
 				Integer len = new Integer(32);
 				if (rfidlib_reader.RDR_ParseTagDataReportRaw(dnhReport, byData, len) == 0) {
 					if (len > 0) {
-						epcSet.add(byteToHex(byData).substring(0, 36));
+						String epcHex = byteToHex(byData).substring(0, 36);
+						try {
+							epcSet.add(EpcCode.parseEpcCode(epcHex));
+						} catch (Exception e) {
+							logger.error("EPC HEX \"" + epcHex + "\"解析失败。", e);
+						}
 					}
 				}
 				dnhReport = rfidlib_reader.RDR_GetTagDataReport(hReader, rfid_def.RFID_SEEK_NEXT); // next

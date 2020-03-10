@@ -1,6 +1,16 @@
 package com.dongduo.library.inventory.controller;
 
+import com.dongduo.library.inventory.entity.BookStore;
+
 public class BookVo {
+    public enum Status {
+        正常在架,
+        正常借出,
+        异常在架,
+        图书缺失,
+        架位错误
+    }
+
     private String bookname;
 
     private String banid;
@@ -9,16 +19,16 @@ public class BookVo {
 
     private String author;
 
-    private String status;
+    private Status status;
 
     public BookVo() {
     }
 
-    public BookVo(String bookname, String banid, String isbn, String author, String status) {
-        this.bookname = bookname;
-        this.banid = banid;
-        this.isbn = isbn;
-        this.author = author;
+    public BookVo(BookStore bookStore, Status status) {
+        this.bookname = bookStore.getBookname();
+        this.banid = bookStore.getBanId();
+        this.isbn = bookStore.getBookInfo().getIsbn();
+        this.author = bookStore.getBookInfo().getAuthor();
         this.status = status;
     }
 
@@ -54,11 +64,11 @@ public class BookVo {
         this.author = author;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 }

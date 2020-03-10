@@ -15,11 +15,14 @@ public class BookStore {
     @Column
     private String bookname;
 
-    @Column
-    private String banid;
+    @Column(name = "banid")
+    private String banId;
 
     @Column(name = "rfid_sn")
     private String rfidSn;
+
+    @Column(name = "left_count")
+    private int leftCount;
 
     @JoinColumn(name = "bk_id", referencedColumnName = "id")
     @ManyToOne()
@@ -41,12 +44,12 @@ public class BookStore {
         this.bookname = bookname;
     }
 
-    public String getBanid() {
-        return banid;
+    public String getBanId() {
+        return banId;
     }
 
-    public void setBanid(String banid) {
-        this.banid = banid;
+    public void setBanId(String banId) {
+        this.banId = banId;
     }
 
     public String getRfidSn() {
@@ -55,6 +58,14 @@ public class BookStore {
 
     public void setRfidSn(String rfidSn) {
         this.rfidSn = rfidSn;
+    }
+
+    public int getLeftCount() {
+        return leftCount;
+    }
+
+    public void setLeftCount(int leftCount) {
+        this.leftCount = leftCount;
     }
 
     public BookInfo getBookInfo() {
