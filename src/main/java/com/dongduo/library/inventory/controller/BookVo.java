@@ -24,6 +24,14 @@ public class BookVo {
     public BookVo() {
     }
 
+    public BookVo(String bookname, String banid, String isbn, String author, Status status) {
+        this.bookname = bookname;
+        this.banid = banid;
+        this.isbn = isbn;
+        this.author = author;
+        this.status = status;
+    }
+
     public BookVo(BookStore bookStore, Status status) {
         this.bookname = bookStore.getBookname();
         this.banid = bookStore.getBanId();

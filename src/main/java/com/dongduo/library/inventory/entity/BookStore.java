@@ -28,6 +28,18 @@ public class BookStore {
     @ManyToOne()
     private BookInfo bookInfo;
 
+    public BookStore() {
+    }
+
+    public BookStore(long id, String bookname, String banId, String rfidSn, int leftCount, BookInfo bookInfo) {
+        this.id = id;
+        this.bookname = bookname;
+        this.banId = banId;
+        this.rfidSn = rfidSn;
+        this.leftCount = leftCount;
+        this.bookInfo = bookInfo;
+    }
+
     public long getId() {
         return id;
     }

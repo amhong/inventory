@@ -25,6 +25,15 @@ public class BookInfo {
         return id;
     }
 
+    public BookInfo() {
+    }
+
+    public BookInfo(long id, String isbn, String author) {
+        this.id = id;
+        this.isbn = isbn;
+        this.author = author;
+    }
+
     public void setId(long id) {
         this.id = id;
     }

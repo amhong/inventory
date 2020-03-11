@@ -6,13 +6,15 @@ import RFID.rfidlib_reader;
 import com.dongduo.library.inventory.util.EpcCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
-public class RPanUHF {
+@Service
+@ConditionalOnProperty(name = "inventory.useSimulatedDevice", havingValue = "false")
+public class RPanUHF implements IRPanUHF{
 	private static final Logger logger = LoggerFactory.getLogger(RPanUHF.class);
 
     public static long hReader = 0;
@@ -21,6 +23,7 @@ public class RPanUHF {
 		loadLibrary();
 	}
 
+	@Override
     public boolean connect() {
         Long hrOut = new Long(0);
         int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
@@ -31,6 +34,7 @@ public class RPanUHF {
         return true;
     }
 
+	@Override
     public void disconnect() {
 		if (hReader == 0L) {
 			return;
@@ -39,6 +43,7 @@ public class RPanUHF {
 		hReader = 0L;
 	}
 
+	@Override
 	public Set<EpcCode> getRecordEpc() {
 		byte gFlg = 0x00;//
 		boolean b_threadRun = true;

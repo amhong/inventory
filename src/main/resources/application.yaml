@@ -1,0 +1,18 @@
+spring:
+  jpa:
+    database: mysql
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        strategy: org.hibernate.cfg.DefaultNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://47.104.28.184:3306/bookmgr
+    username: root
+    password: qW334R234Eee2
+    testOnBorrow: true
+    validation-interval: 3600000
+    validation-query: select 1
