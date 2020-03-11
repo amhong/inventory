@@ -21,24 +21,15 @@ public class BookStore {
     @Column(name = "rfid_sn")
     private String rfidSn;
 
+    @Column(name = "shelf")
+    private String shelfId;
+
     @Column(name = "left_count")
     private int leftCount;
 
     @JoinColumn(name = "bk_id", referencedColumnName = "id")
     @ManyToOne()
     private BookInfo bookInfo;
-
-    public BookStore() {
-    }
-
-    public BookStore(long id, String bookname, String banId, String rfidSn, int leftCount, BookInfo bookInfo) {
-        this.id = id;
-        this.bookname = bookname;
-        this.banId = banId;
-        this.rfidSn = rfidSn;
-        this.leftCount = leftCount;
-        this.bookInfo = bookInfo;
-    }
 
     public long getId() {
         return id;
@@ -70,6 +61,14 @@ public class BookStore {
 
     public void setRfidSn(String rfidSn) {
         this.rfidSn = rfidSn;
+    }
+
+    public String getShelfId() {
+        return shelfId;
+    }
+
+    public void setShelfId(String shelfId) {
+        this.shelfId = shelfId;
     }
 
     public int getLeftCount() {

@@ -3,26 +3,25 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dongduo.library.inventory.controller.MainController">
-    <Label layoutX="14.0" layoutY="23.0" prefHeight="17.0" prefWidth="351.0" text="请连接手持点检仪并选择正确的架位号，然后点击开始盘点。"/>
-    <Label layoutX="14.0" layoutY="57.0" text="架位号："/>
-    <ChoiceBox fx:id="place" layoutX="66.0" layoutY="52.0" prefHeight="27.0" prefWidth="105.0"/>
-    <Button fx:id="start" layoutX="190.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="开始盘点"/>
-    <Button fx:id="cancel" visible="false" layoutX="190.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="取消"/>
-    <TableView fx:id="tableView" prefHeight="288.0" prefWidth="650" AnchorPane.bottomAnchor="10"
-               AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="90.0">
+<AnchorPane prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dongduo.library.inventory.controller.MainController">
+    <Label layoutX="14.0" layoutY="23.0" prefHeight="17.0" prefWidth="351.0" text="请连接手持点检仪并选择正确的架位号，然后点击开始盘点。" />
+    <Label layoutX="14.0" layoutY="57.0" text="书库：" />
+    <ChoiceBox fx:id="place" layoutX="53.0" layoutY="52.0" prefHeight="27.0" prefWidth="122.0" />
+    <Label layoutX="190.0" layoutY="57.0" text="书架：" />
+    <ChoiceBox fx:id="shelf" layoutX="229.0" layoutY="52.0" prefHeight="27.0" prefWidth="122.0" />
+    <Button fx:id="start" layoutX="377.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="开始盘点" />
+    <Button fx:id="cancel" layoutX="377.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="取消" visible="false" />
+    <TableView fx:id="tableView" prefHeight="288.0" prefWidth="650" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="90.0">
         <columns>
-            <TableColumn fx:id="bookname" minWidth="300.0" prefWidth="300.0" text="图书名称"/>
-            <TableColumn fx:id="banid" minWidth="70.0" prefWidth="200.0" text="条码号"/>
-            <TableColumn fx:id="isbn" minWidth="110.0" prefWidth="200.0" text="ISBN"/>
-            <TableColumn fx:id="author" minWidth="100.0" prefWidth="100.0" text="作者"/>
-            <TableColumn fx:id="status" minWidth="40.0" prefWidth="70.0" text="在架状态"/>
+            <TableColumn fx:id="bookname" minWidth="300.0" prefWidth="300.0" text="图书名称" />
+            <TableColumn fx:id="banid" minWidth="70.0" prefWidth="200.0" text="条码号" />
+            <TableColumn fx:id="isbn" minWidth="110.0" prefWidth="200.0" text="ISBN" />
+            <TableColumn fx:id="author" minWidth="100.0" prefWidth="100.0" text="作者" />
+            <TableColumn fx:id="status" minWidth="40.0" prefWidth="70.0" text="在架状态" />
         </columns>
         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
         </columnResizePolicy>
     </TableView>
-    <ProgressBar fx:id="progressBar" maxHeight="16" minHeight="16" progress="0.0" visible="false"
-                 AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"/>
+    <ProgressBar fx:id="progressBar" maxHeight="16" minHeight="16" progress="0.0" visible="false" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" />
 </AnchorPane>

@@ -21,6 +21,15 @@ public class Place {
     @Column(name = "gcd_code")
     private String gcdCode;
 
+    public Place() {
+    }
+
+    public Place(long id, String gcdName, String gcdCode) {
+        this.id = id;
+        this.gcdName = gcdName;
+        this.gcdCode = gcdCode;
+    }
+
     public long getId() {
         return id;
     }

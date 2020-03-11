@@ -13,7 +13,7 @@ import javax.persistence.Table;
 public class Shelf {
     @Id
     @Column
-    private long id;
+    private String id;
 
     /**
      * 书库id
@@ -26,4 +26,37 @@ public class Shelf {
      */
     @Column
     private String name;
+
+    public Shelf() {
+    }
+
+    public Shelf(String id, String placeId, String name) {
+        this.id = id;
+        this.placeId = placeId;
+        this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
