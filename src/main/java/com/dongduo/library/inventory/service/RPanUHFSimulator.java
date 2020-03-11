@@ -21,9 +21,10 @@ public class RPanUHFSimulator implements IRPanUHF {
 
     @Override
     public Set<EpcCode> getRecordEpc() {
-        return Stream.iterate(100000, n -> n+1)
-                .limit(15)
-                .map(n -> new EpcCode(false, String.valueOf(n)))
-                .collect(Collectors.toSet());
+//        return Stream.iterate(100000, n -> n+1)
+//                .limit(10)
+//                .map(n -> new EpcCode(false, String.valueOf(n)))
+//                .collect(Collectors.toSet());
+        return null;
     }
 }

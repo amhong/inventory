@@ -10,7 +10,6 @@ import com.dongduo.library.inventory.service.IRPanUHF;
 import com.dongduo.library.inventory.util.EpcCode;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -50,9 +49,6 @@ public class MainController implements Initializable {
     private Button start;
 
     @FXML
-    private Button cancel;
-
-    @FXML
     private TableView<BookVo> tableView;
 
     @FXML
@@ -80,8 +76,6 @@ public class MainController implements Initializable {
     private PlaceRepository placeRepository;
 
     private ShelfRepository shelfRepository;
-
-    private ObservableList<BookVo> bookVos = FXCollections.observableArrayList();
 
     @Autowired
     public MainController(IRPanUHF rPanUHF, BookRepository bookRepository, PlaceRepository placeRepository,
@@ -154,13 +148,12 @@ public class MainController implements Initializable {
         isbn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         author.setCellValueFactory(new PropertyValueFactory<>("author"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
-        tableView.setItems(bookVos);
     }
 
     /**
      * 选择书库的处理方法
      */
-    public void handlePlaceChanged(ObservableValue observable, Place oldValue, Place newValue) {
+    public void handlePlaceChanged(ObservableValue<? extends Place> observable, Place oldValue, Place newValue) {
         long selectedId = newValue.getId();
         if (oldValue.getId() != selectedId) {
             if (selectedId == 0L) {
@@ -179,9 +172,8 @@ public class MainController implements Initializable {
     }
 
     private void handleStart(MouseEvent event) {
-        bookVos.clear();
-        cancel.setVisible(true);
-        start.setVisible(false);
+        tableView.getItems().clear();
+        start.setDisable(true);
         place.setDisable(true);
         shelf.setDisable(true);
         progressBar.setVisible(true);
@@ -191,7 +183,11 @@ public class MainController implements Initializable {
             progressBar.progressProperty().bind(task.progressProperty());
             new Thread(task).start();
         } else {
-            // TODO 弹出提示框
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("手持盘点仪连接失败！");
+            alert.setContentText("请检查手持盘点仪是否已正确连接。");
+            alert.setOnCloseRequest(e -> renew());
+            alert.showAndWait();
         }
     }
 
@@ -203,6 +199,7 @@ public class MainController implements Initializable {
             rPanUHF.disconnect();
             updateProgress(0.07D, 1D);
             if (!CollectionUtils.isEmpty(epcStrs)) {
+                ObservableList<BookVo> bookVos = tableView.getItems();
                 Map<String, EpcCode> epcMap = epcStrs.stream().collect(Collectors.toMap(EpcCode::getItemId, e -> e));
                 Specification<BookStore> criteria = (root, query, cb) -> cb.equal(root.get("shelfId"), shelf.getValue().getId());
                 Pageable pageable = PageRequest.of(0, 2, Sort.by("bookname"));
@@ -230,7 +227,8 @@ public class MainController implements Initializable {
 
                 bookVos.sorted();
             } else {
-                // TODO 弹出提示框，从手持盘点仪读取到的数据为空
+                // TODO 实现方式需要优化
+                this.failed();
             }
 
             return null;
@@ -240,7 +238,7 @@ public class MainController implements Initializable {
         protected void succeeded() {
             updateProgress(1D, 1D);
             try {
-                Thread.sleep(1000L);
+                Thread.sleep(500L);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
             }
@@ -249,6 +247,11 @@ public class MainController implements Initializable {
 
         @Override
         protected void failed() {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText("没有从手持盘点仪读取到数据！");
+            alert.setContentText("请确认是否已完成书架扫描。");
+            alert.setOnCloseRequest(e -> renew());
+            alert.showAndWait();
             renew();
         }
 
@@ -270,7 +273,6 @@ public class MainController implements Initializable {
         progressBar.setVisible(false);
         shelf.setDisable(false);
         place.setDisable(false);
-        start.setVisible(true);
-        cancel.setVisible(false);
+        start.setDisable(false);
     }
 }
