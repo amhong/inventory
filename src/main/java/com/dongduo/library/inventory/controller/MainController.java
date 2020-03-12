@@ -14,9 +14,12 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,6 +151,36 @@ public class MainController implements Initializable {
         isbn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         author.setCellValueFactory(new PropertyValueFactory<>("author"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
+        status.setCellFactory(new Callback<TableColumn<BookVo, String>, TableCell<BookVo, String>>() {
+            public TableCell call(TableColumn param) {
+                return new TableCell<BookVo, BookVo.Status>() {
+                    @Override
+                    protected void updateItem(BookVo.Status item, boolean empty) {
+                        if (!empty) {
+                            switch (item) {
+                                case 图书缺失:
+                                    this.setTextFill(Color.RED);
+                                    break;
+                                case 异常在架:
+                                    this.setTextFill(Color.ORANGE);
+                                    break;
+                                case 架位错误:
+                                    this.setTextFill(Color.YELLOW);
+                                    break;
+                                case 正常借出:
+                                    this.setTextFill(Color.DEEPSKYBLUE);
+                                    break;
+                                case 正常在架:
+                                    this.setTextFill(Color.MEDIUMSEAGREEN);
+                                    break;
+                            }
+                            this.setAlignment(Pos.CENTER);
+                            this.setText(item.name());
+                        }
+                    }
+                };
+            }
+        });
     }
 
     /**

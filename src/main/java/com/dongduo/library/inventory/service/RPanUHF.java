@@ -94,7 +94,7 @@ public class RPanUHF implements IRPanUHF{
     private void loadLibrary() {
         int osType = 0;
         int arType = 0;
-        //String libPath = System.getProperty("user.dir");
+        // TODO String libPath = System.getProperty("user.dir");
 		String libPath = "D:\\IdeaProjects\\inventory\\src\\main\\resources";
         String osName = System.getProperty("os.name");
         String architecture = System.getProperty("os.arch");
