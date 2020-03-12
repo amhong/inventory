@@ -6,14 +6,12 @@ import RFID.rfidlib_reader;
 import com.dongduo.library.inventory.util.EpcCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
-@ConditionalOnProperty(name = "inventory.useSimulatedDevice", havingValue = "false")
 public class RPanUHF implements IRPanUHF{
 	private static final Logger logger = LoggerFactory.getLogger(RPanUHF.class);
 
@@ -25,7 +23,7 @@ public class RPanUHF implements IRPanUHF{
 
 	@Override
     public boolean connect() {
-        Long hrOut = new Long(0);
+        Long hrOut = new Long(3);
         int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
         if (nret != 0) {
             return false;
@@ -94,8 +92,9 @@ public class RPanUHF implements IRPanUHF{
     private void loadLibrary() {
         int osType = 0;
         int arType = 0;
-        // TODO String libPath = System.getProperty("user.dir");
-		String libPath = "D:\\IdeaProjects\\inventory\\src\\main\\resources";
+        String libPath = System.getProperty("user.dir");
+        logger.info("---------" + libPath);
+		//String libPath = "D:\\IdeaProjects\\inventory\\src\\main\\resources";
         String osName = System.getProperty("os.name");
         String architecture = System.getProperty("os.arch");
         osName = osName.toUpperCase();

@@ -24,11 +24,11 @@ public class rfidlib_reader {
 		}
 
 		if (osName.equals("Windows")) {
-			libPath = String.format("%s/libs/%s/%s/rfidlib_reader.dll", sLibPath, osName, architecture);
+			libPath = String.format("%s\\libs\\%s\\%s\\rfidlib_reader.dll", sLibPath, osName, architecture);
 			System.load(libPath);
-			libPath = String.format("%s/libs/%s/%s/jni_rfidlib_reader.dll", sLibPath, osName, architecture);
+			libPath = String.format("%s\\libs\\%s\\%s\\jni_rfidlib_reader.dll", sLibPath, osName, architecture);
 			System.load(libPath);
-			libPath = String.format("%s/libs/%s/%s/Drivers", sLibPath, osName, architecture);
+			libPath = String.format("%s\\libs\\%s\\%s\\Drivers", sLibPath, osName, architecture);
 			RDR_LoadReaderDrivers(libPath);
 		} else if (osName.equals("Linux")) {
 		}

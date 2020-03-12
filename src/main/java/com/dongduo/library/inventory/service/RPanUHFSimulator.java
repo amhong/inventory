@@ -7,8 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service
-//@ConditionalOnProperty(name = "inventory.useSimulatedDevice", havingValue = "true")
+//@Service
 public class RPanUHFSimulator implements IRPanUHF {
     @Override
     public boolean connect() {
