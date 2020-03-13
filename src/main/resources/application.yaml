@@ -16,3 +16,6 @@ spring:
     testOnBorrow: true
     validation-interval: 3600000
     validation-query: select 1
+inventory:
+  page:
+    size: 2

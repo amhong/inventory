@@ -24,6 +24,7 @@ import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -67,7 +68,7 @@ public class MainController implements Initializable {
     private TableColumn<BookVo, String> author;
 
     @FXML
-    private TableColumn<BookVo, String> status;
+    private TableColumn<BookVo, BookVo.Status> status;
 
     @FXML
     private ProgressBar progressBar;
@@ -79,6 +80,9 @@ public class MainController implements Initializable {
     private PlaceRepository placeRepository;
 
     private ShelfRepository shelfRepository;
+
+    @Value("${inventory.page.size}")
+    private int pageSize;
 
     @Autowired
     public MainController(IRPanUHF rPanUHF, BookRepository bookRepository, PlaceRepository placeRepository,
@@ -151,8 +155,8 @@ public class MainController implements Initializable {
         isbn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         author.setCellValueFactory(new PropertyValueFactory<>("author"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
-        status.setCellFactory(new Callback<TableColumn<BookVo, String>, TableCell<BookVo, String>>() {
-            public TableCell call(TableColumn param) {
+        status.setCellFactory(new Callback<TableColumn<BookVo, BookVo.Status>, TableCell<BookVo, BookVo.Status>>() {
+            public TableCell<BookVo, BookVo.Status> call(TableColumn param) {
                 return new TableCell<BookVo, BookVo.Status>() {
                     @Override
                     protected void updateItem(BookVo.Status item, boolean empty) {
@@ -235,7 +239,7 @@ public class MainController implements Initializable {
                 ObservableList<BookVo> bookVos = tableView.getItems();
                 Map<String, EpcCode> epcMap = epcStrs.stream().collect(Collectors.toMap(EpcCode::getItemId, e -> e));
                 Specification<BookStore> criteria = (root, query, cb) -> cb.equal(root.get("shelfId"), shelf.getValue().getId());
-                Pageable pageable = PageRequest.of(0, 2, Sort.by("bookname"));
+                Pageable pageable = PageRequest.of(0, pageSize, Sort.by("bookname"));
                 Page<BookStore> page;
                 double totalSize = epcStrs.size();
                 do {
