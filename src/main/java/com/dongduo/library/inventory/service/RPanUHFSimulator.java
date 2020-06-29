@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//@Service
+@Service
 public class RPanUHFSimulator implements IRPanUHF {
     @Override
     public boolean connect() {
@@ -20,7 +20,7 @@ public class RPanUHFSimulator implements IRPanUHF {
 
     @Override
     public Set<EpcCode> getRecordEpc() {
-        return Stream.iterate(100004, n -> n+1)
+        return Stream.iterate(100009, n -> n+1)
                 .limit(10)
                 .map(n -> new EpcCode(false, String.valueOf(n)))
                 .collect(Collectors.toSet());

@@ -1,6 +1,9 @@
 package com.dongduo.library.inventory.controller;
 
 import com.dongduo.library.inventory.entity.BookStore;
+import javafx.beans.property.SimpleBooleanProperty;
+
+import java.util.StringJoiner;
 
 public class BookVo {
     public enum Status {
@@ -21,14 +24,13 @@ public class BookVo {
 
     private Status status;
 
+    private SimpleBooleanProperty selected = new SimpleBooleanProperty(true);
+
     public BookVo() {
     }
 
-    public BookVo(String bookname, String banid, String isbn, String author, Status status) {
-        this.bookname = bookname;
+    public BookVo(String banid, Status status) {
         this.banid = banid;
-        this.isbn = isbn;
-        this.author = author;
         this.status = status;
     }
 
@@ -78,5 +80,29 @@ public class BookVo {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    public SimpleBooleanProperty selectedProperty() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", BookVo.class.getSimpleName() + "[", "]")
+                .add("bookname='" + bookname + "'")
+                .add("banid='" + banid + "'")
+                .add("isbn='" + isbn + "'")
+                .add("author='" + author + "'")
+                .add("status=" + status)
+                .add("selected=" + selected.get())
+                .toString();
     }
 }
