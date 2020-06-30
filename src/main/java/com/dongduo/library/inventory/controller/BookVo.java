@@ -1,6 +1,7 @@
 package com.dongduo.library.inventory.controller;
 
 import com.dongduo.library.inventory.entity.BookStore;
+import com.dongduo.library.inventory.entity.Shelf;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import java.util.StringJoiner;
@@ -11,7 +12,10 @@ public class BookVo {
         正常借出,
         异常在架,
         图书缺失,
-        架位错误
+        架位错误,
+        已上架,
+        未上架,
+        未入库
     }
 
     private String bookname;
@@ -22,24 +26,35 @@ public class BookVo {
 
     private String author;
 
+    private String place;
+
+    private String shelf;
+
     private Status status;
 
-    private SimpleBooleanProperty selected = new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty selected;
 
     public BookVo() {
     }
 
-    public BookVo(String banid, Status status) {
+    public BookVo(String banid, Status status, boolean selected) {
         this.banid = banid;
         this.status = status;
+        this.selected = new SimpleBooleanProperty(selected);
     }
 
-    public BookVo(BookStore bookStore, Status status) {
+    public BookVo(BookStore bookStore, Status status, boolean selected) {
         this.bookname = bookStore.getBookname();
         this.banid = bookStore.getBanId();
         this.isbn = bookStore.getBookInfo().getIsbn();
         this.author = bookStore.getBookInfo().getAuthor();
+        Shelf shelf = bookStore.getShelf();
+        if (shelf != null) {
+            this.place = shelf.getPlace().getGcdName();
+            this.shelf = shelf.getName();
+        }
         this.status = status;
+        this.selected = new SimpleBooleanProperty(selected);
     }
 
     public String getBookname() {
@@ -72,6 +87,22 @@ public class BookVo {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public String getShelf() {
+        return shelf;
+    }
+
+    public void setShelf(String shelf) {
+        this.shelf = shelf;
     }
 
     public Status getStatus() {

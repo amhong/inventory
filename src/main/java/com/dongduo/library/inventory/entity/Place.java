@@ -1,9 +1,6 @@
 package com.dongduo.library.inventory.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 书库
@@ -13,7 +10,7 @@ import javax.persistence.Table;
 public class Place {
     @Id
     @Column
-    private long id;
+    private String id;
 
     @Column(name = "gcd_name")
     private String gcdName;
@@ -24,17 +21,17 @@ public class Place {
     public Place() {
     }
 
-    public Place(long id, String gcdName, String gcdCode) {
+    public Place(String id, String gcdName, String gcdCode) {
         this.id = id;
         this.gcdName = gcdName;
         this.gcdCode = gcdCode;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
