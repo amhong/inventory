@@ -3,85 +3,62 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane prefHeight="800.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE"
-         xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="com.dongduo.library.inventory.controller.MainController">
+<TabPane prefHeight="800.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dongduo.library.inventory.controller.MainController">
     <tabs>
         <Tab text="图书盘点">
             <content>
                 <AnchorPane prefHeight="800.0" prefWidth="1000.0">
-                    <Label layoutX="14.0" layoutY="23.0" prefHeight="17.0" prefWidth="351.0"
-                           text="请连接手持点检仪并选择正确的架位号，然后点击开始盘点。"/>
-                    <Label layoutX="14.0" layoutY="57.0" text="书库："/>
-                    <ChoiceBox fx:id="inventory_place" layoutX="53.0" layoutY="52.0" prefHeight="27.0"
-                               prefWidth="122.0"/>
-                    <Label layoutX="190.0" layoutY="57.0" text="书架："/>
-                    <ChoiceBox fx:id="inventory_shelf" layoutX="229.0" layoutY="52.0" prefHeight="27.0"
-                               prefWidth="122.0"/>
-                    <Button fx:id="inventory_start" disable="true" layoutX="377.0" layoutY="52.0"
-                            mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="开始盘点"/>
-                    <TableView fx:id="inventory_tableView" prefHeight="288.0" prefWidth="650"
-                               AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-                               AnchorPane.topAnchor="90.0">
+                    <Label layoutX="14.0" layoutY="23.0" prefHeight="17.0" prefWidth="351.0" text="请连接手持点检仪并选择正确的架位号，然后点击开始盘点。" />
+                    <Label layoutX="14.0" layoutY="57.0" text="书库：" />
+                    <ChoiceBox fx:id="inventory_place" layoutX="53.0" layoutY="52.0" prefHeight="27.0" prefWidth="122.0" />
+                    <Label layoutX="190.0" layoutY="57.0" text="书架：" />
+                    <ChoiceBox fx:id="inventory_shelf" layoutX="229.0" layoutY="52.0" prefHeight="27.0" prefWidth="122.0" />
+                    <Button fx:id="inventory_start" disable="true" layoutX="377.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="开始盘点" />
+                    <TableView fx:id="inventory_tableView" prefHeight="288.0" prefWidth="650" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="90.0">
                         <columns>
-                            <TableColumn fx:id="inventory_tableView_bookname" minWidth="300.0" prefWidth="300.0"
-                                         text="图书名称"/>
-                            <TableColumn fx:id="inventory_tableView_banid" minWidth="70.0" prefWidth="200.0"
-                                         text="条码号"/>
-                            <TableColumn fx:id="inventory_tableView_isbn" minWidth="110.0" prefWidth="200.0"
-                                         text="ISBN"/>
-                            <TableColumn fx:id="inventory_tableView_author" minWidth="100.0" prefWidth="100.0"
-                                         text="作者"/>
-                            <TableColumn fx:id="inventory_tableView_place" minWidth="50.0" prefWidth="50.0" text="书库"/>
-                            <TableColumn fx:id="inventory_tableView_shelf" minWidth="50.0" prefWidth="50.0" text="书架"/>
-                            <TableColumn fx:id="inventory_tableView_status" minWidth="40.0" prefWidth="70.0" text="状态"/>
+                            <TableColumn fx:id="inventory_tableView_bookname" minWidth="300.0" prefWidth="300.0" text="图书名称" />
+                            <TableColumn fx:id="inventory_tableView_banid" minWidth="70.0" prefWidth="200.0" text="条码号" />
+                            <TableColumn fx:id="inventory_tableView_isbn" minWidth="110.0" prefWidth="200.0" text="ISBN" />
+                            <TableColumn fx:id="inventory_tableView_author" minWidth="100.0" prefWidth="100.0" text="作者" />
+                            <TableColumn fx:id="inventory_tableView_place" minWidth="50.0" prefWidth="50.0" text="书库" />
+                            <TableColumn fx:id="inventory_tableView_shelf" minWidth="50.0" prefWidth="50.0" text="书架" />
+                            <TableColumn fx:id="inventory_tableView_status" minWidth="40.0" prefWidth="70.0" text="状态" />
                         </columns>
                         <columnResizePolicy>
-                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                         </columnResizePolicy>
                     </TableView>
-                    <ProgressBar fx:id="inventory_progressBar" maxHeight="16" minHeight="16" progress="0.0"
-                                 visible="false" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-                                 AnchorPane.rightAnchor="10"/>
+                    <ProgressBar fx:id="inventory_progressBar" maxHeight="16" minHeight="16" progress="0.0" visible="false" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" />
                 </AnchorPane>
             </content>
         </Tab>
         <Tab text="图书上架">
             <content>
                 <AnchorPane prefHeight="800.0" prefWidth="1000.0">
-                    <Label layoutX="14.0" layoutY="23.0" prefHeight="17.0" prefWidth="420.0"
-                           text="请连接手持点检仪并点击读取，然后选择架位进行新书上架或更新架位。"/>
-                    <Button fx:id="putaway_read" layoutX="12.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0"
-                            prefWidth="70.0" text="读取"/>
-                    <Label layoutX="125.0" layoutY="57.0" text="书库："/>
-                    <ChoiceBox fx:id="putaway_place" disable="true" layoutX="164.0" layoutY="52.0" prefHeight="27.0"
-                               prefWidth="122.0"/>
-                    <Label layoutX="301.0" layoutY="57.0" text="书架："/>
-                    <ChoiceBox fx:id="putaway_shelf" disable="true" layoutX="340.0" layoutY="52.0" prefHeight="27.0"
-                               prefWidth="122.0"/>
-                    <Button fx:id="putaway_start" disable="true" layoutX="488.0" layoutY="52.0" mnemonicParsing="false"
-                            prefHeight="27.0" prefWidth="70.0" text="上架"/>
-                    <TableView fx:id="putaway_tableView" prefHeight="288.0" prefWidth="650" AnchorPane.bottomAnchor="10"
-                               AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="90.0">
+                    <Label layoutX="14.0" layoutY="23.0" prefHeight="17.0" prefWidth="420.0" text="请连接手持点检仪并点击读取，然后选择架位及图书进行上架。" />
+                    <Label layoutX="377.0" layoutY="23.0" prefHeight="17.0" prefWidth="478.0" text="请注意：勾选已上架的图书将更新其架位信息。" textFill="#f50202" />
+                    <Button fx:id="putaway_read" layoutX="12.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="读取" />
+                    <Label layoutX="125.0" layoutY="57.0" text="书库：" />
+                    <ChoiceBox fx:id="putaway_place" disable="true" layoutX="164.0" layoutY="52.0" prefHeight="27.0" prefWidth="122.0" />
+                    <Label layoutX="301.0" layoutY="57.0" text="书架：" />
+                    <ChoiceBox fx:id="putaway_shelf" disable="true" layoutX="340.0" layoutY="52.0" prefHeight="27.0" prefWidth="122.0" />
+                    <Button fx:id="putaway_start" disable="true" layoutX="488.0" layoutY="52.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="上架" />
+                    <TableView fx:id="putaway_tableView" prefHeight="288.0" prefWidth="650" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="90.0">
                         <columns>
-                            <TableColumn fx:id="putaway_tableView_select" maxWidth="32.0" minWidth="32.0"
-                                         prefWidth="32.0" text=""/>
-                            <TableColumn fx:id="putaway_tableView_bookname" minWidth="300.0" prefWidth="300.0"
-                                         text="图书名称"/>
-                            <TableColumn fx:id="putaway_tableView_banid" minWidth="70.0" prefWidth="70.0" text="条码号"/>
-                            <TableColumn fx:id="putaway_tableView_isbn" minWidth="110.0" prefWidth="110.0" text="ISBN"/>
-                            <TableColumn fx:id="putaway_tableView_author" minWidth="100.0" prefWidth="100.0" text="作者"/>
-                            <TableColumn fx:id="putaway_tableView_place" minWidth="50.0" prefWidth="50.0" text="书库"/>
-                            <TableColumn fx:id="putaway_tableView_shelf" minWidth="50.0" prefWidth="50.0" text="书架"/>
-                            <TableColumn fx:id="putaway_tableView_status" minWidth="70.0" prefWidth="70.0" text="状态"/>
+                            <TableColumn fx:id="putaway_tableView_select" maxWidth="32.0" minWidth="32.0" prefWidth="32.0" text="" />
+                            <TableColumn fx:id="putaway_tableView_bookname" minWidth="300.0" prefWidth="300.0" text="图书名称" />
+                            <TableColumn fx:id="putaway_tableView_banid" minWidth="70.0" prefWidth="70.0" text="条码号" />
+                            <TableColumn fx:id="putaway_tableView_isbn" minWidth="110.0" prefWidth="110.0" text="ISBN" />
+                            <TableColumn fx:id="putaway_tableView_author" minWidth="100.0" prefWidth="100.0" text="作者" />
+                            <TableColumn fx:id="putaway_tableView_place" minWidth="50.0" prefWidth="50.0" text="书库" />
+                            <TableColumn fx:id="putaway_tableView_shelf" minWidth="50.0" prefWidth="50.0" text="书架" />
+                            <TableColumn fx:id="putaway_tableView_status" minWidth="70.0" prefWidth="70.0" text="状态" />
                         </columns>
                         <columnResizePolicy>
-                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                         </columnResizePolicy>
                     </TableView>
-                    <ProgressBar fx:id="putaway_progressBar" maxHeight="16" minHeight="16" progress="0.0"
-                                 visible="false" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-                                 AnchorPane.rightAnchor="10"/>
+                    <ProgressBar fx:id="putaway_progressBar" maxHeight="16" minHeight="16" progress="0.0" visible="false" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" />
                 </AnchorPane>
             </content>
         </Tab>

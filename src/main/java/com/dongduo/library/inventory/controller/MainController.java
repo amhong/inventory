@@ -3,6 +3,7 @@ package com.dongduo.library.inventory.controller;
 import com.dongduo.library.inventory.entity.BookStore;
 import com.dongduo.library.inventory.entity.Place;
 import com.dongduo.library.inventory.entity.Shelf;
+import com.dongduo.library.inventory.exception.NoDataOnRPanUHFException;
 import com.dongduo.library.inventory.repository.BookRepository;
 import com.dongduo.library.inventory.repository.PlaceRepository;
 import com.dongduo.library.inventory.repository.ShelfRepository;
@@ -13,6 +14,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -27,10 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.util.CollectionUtils;
 
 import java.net.URL;
@@ -131,6 +135,10 @@ public class MainController implements Initializable {
 
     private final ShelfRepository shelfRepository;
 
+    private final EventHandler<DialogEvent> renewPutawayEventHandler = event -> renewPutaway();
+
+    private final EventHandler<DialogEvent> renewInventoryEventHandler = event -> renewInventory();
+
     @Value("${inventory.page.size}")
     private int pageSize;
 
@@ -145,6 +153,15 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            placeRepository.count();
+        } catch (CannotCreateTransactionException |
+                DataAccessResourceFailureException e) {
+            logger.error(e.getMessage(), e);
+            showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
+                    event -> System.exit(0));
+            return;
+        }
         initPlaceAndShelf(inventory_place, inventory_shelf,
                 (observable, oldValue, newValue) -> inventory_start.setDisable(newValue.getId() == null));
         initPlaceAndShelf(putaway_place, putaway_shelf,
@@ -199,7 +216,7 @@ public class MainController implements Initializable {
     /**
      * 选择书库的监听器
      */
-    public static class PlaceChangeListener implements ChangeListener<Place> {
+    public class PlaceChangeListener implements ChangeListener<Place> {
         private final ChoiceBox<Shelf> shelf;
         private final ShelfRepository shelfRepository;
 
@@ -215,7 +232,16 @@ public class MainController implements Initializable {
                 shelf.setDisable(true);
             } else if (!selectedId.equals(oldValue.getId())) {
                 {
-                    List<Shelf> shelfList = shelfRepository.findByPlaceId(selectedId);
+                    List<Shelf> shelfList;
+                    try {
+                        shelfList = shelfRepository.findByPlaceId(selectedId);
+                    } catch (CannotCreateTransactionException |
+                            DataAccessResourceFailureException e) {
+                        showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
+                                event -> {
+                                });
+                        return;
+                    }
                     if (!CollectionUtils.isEmpty(shelfList)) {
                         shelf.getItems().setAll(shelfList);
                         shelf.setDisable(false);
@@ -337,11 +363,8 @@ public class MainController implements Initializable {
             inventory_progressBar.progressProperty().bind(task.progressProperty());
             new Thread(task).start();
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("手持盘点仪连接失败！");
-            alert.setContentText("请检查手持盘点仪是否已正确连接。");
-            alert.setOnCloseRequest(e -> renewInventory());
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "手持盘点仪连接失败！", "请检查手持盘点仪是否已正确连接。",
+                    renewInventoryEventHandler);
         }
     }
 
@@ -379,12 +402,11 @@ public class MainController implements Initializable {
                 }
 
                 bookVos.sorted();
+                return null;
             } else {
-                // TODO 实现方式需要优化
-                this.failed();
+                renewInventory();
+                throw new NoDataOnRPanUHFException("没有从手持盘点仪读取到数据！");
             }
-
-            return null;
         }
 
         @Override
@@ -401,13 +423,20 @@ public class MainController implements Initializable {
         @Override
         protected void failed() {
             Throwable e = this.getException();
-            logger.error(e.getMessage(), e);
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setHeaderText("没有从手持盘点仪读取到数据！");
-            alert.setContentText("请确认是否已完成书架扫描。");
-            alert.setOnCloseRequest(event -> renewInventory());
-            alert.showAndWait();
-            renewInventory();
+            if (e instanceof NoDataOnRPanUHFException) {
+                logger.warn(e.getMessage());
+                showAlert(Alert.AlertType.WARNING, "没有从手持盘点仪读取到数据！", "请确认是否已完成图书扫描。",
+                        renewInventoryEventHandler);
+            } else if (e instanceof CannotCreateTransactionException ||
+                    e instanceof DataAccessResourceFailureException) {
+                logger.error(e.getMessage(), e);
+                showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
+                        renewInventoryEventHandler);
+            } else {
+                logger.error(e.getMessage(), e);
+                showAlert(Alert.AlertType.ERROR, "系统错误！", "请联系软件开发商。",
+                        renewInventoryEventHandler);
+            }
         }
 
         @Override
@@ -438,15 +467,12 @@ public class MainController implements Initializable {
         putaway_progressBar.setVisible(true);
 
         if (rPanUHF.connect()) {
-            Task<Void> task = new PutawayReadRunTask();
+            Task<Void> task = new PutawayReadTask();
             putaway_progressBar.progressProperty().bind(task.progressProperty());
             new Thread(task).start();
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("手持盘点仪连接失败！");
-            alert.setContentText("请检查手持盘点仪是否已正确连接。");
-            alert.setOnCloseRequest(e -> renewPutaway());
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "手持盘点仪连接失败！", "请检查手持盘点仪是否已正确连接。",
+                    renewPutawayEventHandler);
         }
     }
 
@@ -455,26 +481,18 @@ public class MainController implements Initializable {
         if (!CollectionUtils.isEmpty(bookVos)) {
             List<BookVo> selectedBooks = bookVos.stream().filter(BookVo::isSelected).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(selectedBooks)) {
-                selectedBooks.forEach(selectedBook -> {
-                    bookRepository.updateShelf(selectedBook.getBanid(), putaway_shelf.getValue().getId());
-                    selectedBook.setPlace(putaway_place.getValue().getGcdName());
-                    selectedBook.setShelf(putaway_shelf.getValue().getName());
-                    selectedBook.setStatus(BookVo.Status.已上架);
-                    selectedBook.setSelected(false);
-                    putaway_tableView.refresh();
-                });
+                putaway_progressBar.setVisible(true);
+                Task<Void> task = new PutawayStartTask(selectedBooks);
+                putaway_progressBar.progressProperty().bind(task.progressProperty());
+                new Thread(task).start();
                 return;
             }
         }
-
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText("您没有勾选要上架的图书！");
-        alert.setContentText("请至少勾选一条数据。");
-        alert.setOnCloseRequest(e -> renewPutaway());
-        alert.showAndWait();
+        showAlert(Alert.AlertType.WARNING, "您没有勾选要上架的图书！", "请至少勾选一条数据。",
+                renewPutawayEventHandler);
     }
 
-    private class PutawayReadRunTask extends Task<Void> {
+    private class PutawayReadTask extends Task<Void> {
         @Override
         protected Void call() {
             updateProgress(0.03D, 1D);
@@ -497,11 +515,69 @@ public class MainController implements Initializable {
                     updateProgress(Double.parseDouble(String.valueOf(bookVos.size())) /
                             Double.parseDouble(String.valueOf(epcStrs.size())) * 0.9D + 0.07D, 1D);
                 });
+                return null;
             } else {
-                // TODO 实现方式需要优化
-                this.failed();
+                renewPutaway();
+                throw new NoDataOnRPanUHFException("没有从手持盘点仪读取到数据！");
             }
+        }
 
+        @Override
+        protected void succeeded() {
+            updateProgress(1D, 1D);
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+            renewPutaway();
+        }
+
+        @Override
+        protected void failed() {
+            Throwable e = this.getException();
+            if (e instanceof NoDataOnRPanUHFException) {
+                logger.warn(e.getMessage());
+                showAlert(Alert.AlertType.WARNING, "没有从手持盘点仪读取到数据！", "请确认是否已完成图书扫描。",
+                        renewPutawayEventHandler);
+            } else if (e instanceof CannotCreateTransactionException ||
+                    e instanceof DataAccessResourceFailureException) {
+                logger.error(e.getMessage(), e);
+                showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
+                        renewPutawayEventHandler);
+            } else {
+                logger.error(e.getMessage(), e);
+                showAlert(Alert.AlertType.ERROR, "系统错误！", "请联系软件开发商。",
+                        renewPutawayEventHandler);
+            }
+        }
+
+        @Override
+        protected void cancelled() {
+            renewPutaway();
+        }
+    }
+
+    private class PutawayStartTask extends Task<Void> {
+        private final List<BookVo> selectedBooks;
+
+        public PutawayStartTask(List<BookVo> selectedBooks) {
+            this.selectedBooks = selectedBooks;
+        }
+
+        @Override
+        protected Void call() {
+            updateProgress(0.03D, 1D);
+            for (int i = 0; i < this.selectedBooks.size(); i++) {
+                BookVo selectedBook = this.selectedBooks.get(i);
+                bookRepository.updateShelf(selectedBook.getBanid(), putaway_shelf.getValue().getId());
+                selectedBook.setPlace(putaway_place.getValue().getGcdName());
+                selectedBook.setShelf(putaway_shelf.getValue().getName());
+                selectedBook.setStatus(BookVo.Status.已上架);
+                selectedBook.setSelected(false);
+                updateProgress(Double.parseDouble(String.valueOf(i + 1)) /
+                        Double.parseDouble(String.valueOf(this.selectedBooks.size())) * 0.9D + 0.07D, 1D);
+            }
             return null;
         }
 
@@ -518,12 +594,17 @@ public class MainController implements Initializable {
 
         @Override
         protected void failed() {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setHeaderText("没有从手持盘点仪读取到数据！");
-            alert.setContentText("请确认是否已完成书架扫描。");
-            alert.setOnCloseRequest(e -> renewPutaway());
-            alert.showAndWait();
-            renewPutaway();
+            Throwable e = this.getException();
+            if (e instanceof CannotCreateTransactionException ||
+                    e instanceof DataAccessResourceFailureException) {
+                logger.error(e.getMessage(), e);
+                showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
+                        renewPutawayEventHandler);
+            } else {
+                logger.error(e.getMessage(), e);
+                showAlert(Alert.AlertType.ERROR, "系统错误！", "请联系软件开发商。",
+                        renewPutawayEventHandler);
+            }
         }
 
         @Override
@@ -536,5 +617,14 @@ public class MainController implements Initializable {
         putaway_tableView.refresh();
         putaway_progressBar.setVisible(false);
         putaway_place.setDisable(false);
+    }
+
+    private void showAlert(Alert.AlertType alertType, String header, String content,
+                           EventHandler<DialogEvent> eventHandler) {
+        Alert alert = new Alert(alertType);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.setOnCloseRequest(eventHandler);
+        alert.showAndWait();
     }
 }
