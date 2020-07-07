@@ -24,7 +24,7 @@ public class RPanUHF implements IRPanUHF{
 	@Override
     public boolean connect() {
         Long hrOut = 3L;
-        int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
+        int nret = rfidlib_reader.RDR_Open("RDType=200002;CommType=USB;AddrMode=0;SerNum=", hrOut);
         if (nret != 0) {
         	logger.error("USB方式连接盘点仪失败！");
             return false;
