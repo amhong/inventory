@@ -9,6 +9,7 @@ import com.dongduo.library.inventory.repository.PlaceRepository;
 import com.dongduo.library.inventory.repository.ShelfRepository;
 import com.dongduo.library.inventory.service.IRPanUHF;
 import com.dongduo.library.inventory.util.EpcCode;
+import com.dongduo.library.inventory.util.ToastUtil;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -286,6 +287,9 @@ public class MainController implements Initializable {
                                 case 正常在架:
                                     this.setTextFill(Color.MEDIUMSEAGREEN);
                                     break;
+                                case 未入库:
+                                    this.setTextFill(Color.DARKRED);
+                                    break;
                             }
                             this.setAlignment(Pos.CENTER);
                             this.setText(item.name());
@@ -396,8 +400,10 @@ public class MainController implements Initializable {
                         BookStore bookStore = bookRepository.findByBanId(banId);
                         if (bookStore != null) {
                             bookVos.add(new BookVo(bookStore, BookVo.Status.架位错误, false));
-                            updateProgress(bookVos.size() / totalSize * 0.9D + 0.07D, 1D);
+                        } else {
+                            bookVos.add(new BookVo(banId, BookVo.Status.未入库, false));
                         }
+                        updateProgress(bookVos.size() / totalSize * 0.9D + 0.07D, 1D);
                     });
                 }
 
@@ -418,6 +424,7 @@ public class MainController implements Initializable {
                 logger.error(e.getMessage(), e);
             }
             renewInventory();
+            ToastUtil.toast("已完成盘点");
         }
 
         @Override
@@ -531,6 +538,7 @@ public class MainController implements Initializable {
                 logger.error(e.getMessage(), e);
             }
             renewPutaway();
+            ToastUtil.toast("已完成读取");
         }
 
         @Override
@@ -590,6 +598,7 @@ public class MainController implements Initializable {
                 logger.error(e.getMessage(), e);
             }
             renewPutaway();
+            ToastUtil.toast("已完成上架");
         }
 
         @Override
