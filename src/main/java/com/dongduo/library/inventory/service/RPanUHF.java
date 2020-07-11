@@ -24,17 +24,80 @@ public class RPanUHF implements IRPanUHF{
 	@Override
     public boolean connect() {
         Long hrOut = 3L;
-        int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=2;SerNum=\\\\?\\hid#vid_fffe&pid_0091#7&27adce79&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}", hrOut);
-        if (nret != 0) {
-        	logger.error("USB方式连接盘点仪失败！");
+        int deviceSize = rfidlib_reader.HID_Enum("UHF_RPAN");
+        logger.info("找到的设备个数为" + deviceSize);
+        if (deviceSize < 1) {
             return false;
         }
-        hReader = hrOut;
-		logger.info("USB方式连接盘点仪成功！");
-        return true;
+
+        if (deviceSize == 1) {
+            int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=0;SerNum=", hrOut);
+            if (nret != 0) {
+                logger.error("USB方式连接盘点仪失败！");
+                return false;
+            }
+
+            hReader = hrOut;
+            logger.info("USB方式连接盘点仪成功！");
+            return true;
+        }
+
+
+        for (int i = 0; i < deviceSize; i++) {
+            int index = i + 1;
+            String sn = getDeviceSN(i);
+            if (sn == null) {
+                logger.error("第" + index + "个设备的序列号获取失败");
+                continue;
+            }
+            logger.info("第" + index + "个设备的序列号为" + sn);
+            int nret = rfidlib_reader.RDR_Open("RDType=UHF_RPAN;CommType=USB;AddrMode=1;SerNum=" + sn, hrOut);
+            if (nret != 0) {
+                logger.error("第" + index + "个设备连接失败");
+                continue;
+            }
+            logger.info("第" + index + "个设备连接成功");
+            String type = obtainDeviceType(hrOut);
+            logger.info("第" + index + "个设备型号为" + type);
+            if (type == null) {
+                logger.error("第" + index + "个设备的类型获取失败");
+                rfidlib_reader.RDR_Close(hrOut);
+                continue;
+            }
+            if (!"200002".equals(type)) {
+                logger.info("第" + index + "个设备不是RPAN");
+                rfidlib_reader.RDR_Close(hrOut);
+                continue;
+            }
+            logger.info("第" + index + "个设备是RPAN");
+            hReader = hrOut;
+            return true;
+        }
+        return false;
     }
 
-	@Override
+    private String obtainDeviceType(Long hrOut) {
+        byte b = 0;
+        char[] c = new char[1024];
+        int nret = rfidlib_reader.RDR_GetReaderInfor(hrOut, b, c, 1024);
+        if (nret != 0) {
+            return null;
+        }
+        String info = new String(c);
+        return info.split(";")[1];
+    }
+
+    private String getDeviceSN(int i) {
+        byte b = 1;
+        char[] c = new char[1024];
+        int nret = rfidlib_reader.HID_GetEnumItem(i, b, c, 1024 );
+        if (nret != 0) {
+            return null;
+        }
+        return new String(c);
+    }
+
+    @Override
     public void disconnect() {
 		if (hReader != 0L) {
 			rfidlib_reader.RDR_Close(hReader);
