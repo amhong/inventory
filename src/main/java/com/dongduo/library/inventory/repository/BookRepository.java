@@ -10,8 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface BookRepository extends JpaRepository<BookStore, Long>, JpaSpecificationExecutor<BookStore> {
-    BookStore findByBanId(String banId);
-    Page<BookStore> findByShelfId(String shelfId, Pageable pageable);
+    BookStore findByBanIdAndDelFlag(String banId, char delFlag);
+
+    Page<BookStore> findByShelfIdAndDelFlag(String shelfId, char delFlag, Pageable pageable);
 
     @Modifying
     @Query("update BookStore set shelf.id = ?2 where banId = ?1")

@@ -191,7 +191,7 @@ public class MainController implements Initializable {
             }
         });
         place.getItems().add(new Place(null, "----请选择----", null));
-        List<Place> placeEntityList = placeRepository.findAll();
+        List<Place> placeEntityList = placeRepository.findByDelFlag('0');
         if (!CollectionUtils.isEmpty(placeEntityList)) {
             place.getItems().addAll(placeEntityList);
         }
@@ -235,7 +235,7 @@ public class MainController implements Initializable {
                 {
                     List<Shelf> shelfList;
                     try {
-                        shelfList = shelfRepository.findByPlaceId(selectedId);
+                        shelfList = shelfRepository.findByPlaceIdAndDelFlag(selectedId, '0');
                     } catch (CannotCreateTransactionException |
                             DataAccessResourceFailureException e) {
                         showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
@@ -386,7 +386,7 @@ public class MainController implements Initializable {
                 Page<BookStore> page;
                 double totalSize = epcStrs.size();
                 do {
-                    page = bookRepository.findByShelfId(inventory_shelf.getValue().getId(), pageable);
+                    page = bookRepository.findByShelfIdAndDelFlag(inventory_shelf.getValue().getId(), '0', pageable);
                     page.get().map(bs -> new BookVo(bs, obtainStatus(epcMap, bs), false))
                             .forEach(bv -> {
                                 bookVos.add(bv);
@@ -397,7 +397,7 @@ public class MainController implements Initializable {
 
                 if (!epcMap.isEmpty()) { // 处理不应放置在该架上的图书
                     epcMap.forEach((banId, bv) -> {
-                        BookStore bookStore = bookRepository.findByBanId(banId);
+                        BookStore bookStore = bookRepository.findByBanIdAndDelFlag(banId, '0');
                         if (bookStore != null) {
                             bookVos.add(new BookVo(bookStore, BookVo.Status.架位错误, false));
                         } else {
@@ -509,7 +509,7 @@ public class MainController implements Initializable {
             if (!CollectionUtils.isEmpty(epcStrs)) {
                 ObservableList<BookVo> bookVos = putaway_tableView.getItems();
                 epcStrs.forEach(epcCode -> {
-                    BookStore bookStore = bookRepository.findByBanId(epcCode.getItemId());
+                    BookStore bookStore = bookRepository.findByBanIdAndDelFlag(epcCode.getItemId(), '0');
                     if (bookStore != null) {
                         if (bookStore.getShelf() != null) {
                             bookVos.add(new BookVo(bookStore, BookVo.Status.已上架, false));

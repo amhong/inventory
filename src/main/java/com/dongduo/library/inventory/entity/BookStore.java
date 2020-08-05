@@ -28,6 +28,9 @@ public class BookStore {
     @Column(name = "left_count")
     private int leftCount;
 
+    @Column(name = "del_flag")
+    private char delFlag;
+
     @ManyToOne()
     @JoinColumn(name = "bk_id", referencedColumnName = "id")
     private BookInfo bookInfo;
@@ -86,5 +89,13 @@ public class BookStore {
 
     public void setBookInfo(BookInfo bookInfo) {
         this.bookInfo = bookInfo;
+    }
+
+    public char getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(char delFlag) {
+        this.delFlag = delFlag;
     }
 }

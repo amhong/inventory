@@ -18,6 +18,9 @@ public class Place {
     @Column(name = "gcd_code")
     private String gcdCode;
 
+    @Column(name = "del_flag")
+    private char delFlag;
+
     public Place() {
     }
 
@@ -49,5 +52,13 @@ public class Place {
 
     public void setGcdCode(String gcdCode) {
         this.gcdCode = gcdCode;
+    }
+
+    public char getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(char delFlag) {
+        this.delFlag = delFlag;
     }
 }

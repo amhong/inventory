@@ -25,6 +25,9 @@ public class Shelf {
     @Column
     private String name;
 
+    @Column(name = "del_flag")
+    private char delFlag;
+
     public Shelf() {
     }
 
@@ -56,5 +59,13 @@ public class Shelf {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public char getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(char delFlag) {
+        this.delFlag = delFlag;
     }
 }
