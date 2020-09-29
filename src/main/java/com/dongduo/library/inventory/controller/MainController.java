@@ -191,7 +191,7 @@ public class MainController implements Initializable {
             }
         });
         place.getItems().add(new Place(null, "----请选择----", null));
-        List<Place> placeEntityList = placeRepository.findByDelFlag('0');
+        List<Place> placeEntityList = placeRepository.findByDelFlagOrderByGcdName('0');
         if (!CollectionUtils.isEmpty(placeEntityList)) {
             place.getItems().addAll(placeEntityList);
         }
@@ -235,7 +235,7 @@ public class MainController implements Initializable {
                 {
                     List<Shelf> shelfList;
                     try {
-                        shelfList = shelfRepository.findByPlaceIdAndDelFlag(selectedId, '0');
+                        shelfList = shelfRepository.findByPlaceIdAndDelFlagOrderByName(selectedId, '0');
                     } catch (CannotCreateTransactionException |
                             DataAccessResourceFailureException e) {
                         showAlert(Alert.AlertType.ERROR, "数据库连接失败！", "请联系网络管理人员。",
